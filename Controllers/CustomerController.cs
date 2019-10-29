@@ -10,7 +10,7 @@ using mr_mat_api.Models;
 
 namespace mr_mat_api.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/customer")]
     [ApiController]
     public class CustomerController : ControllerBase
     {
@@ -26,6 +26,38 @@ namespace mr_mat_api.Controllers
         public async Task<ActionResult<IEnumerable<Customer>>> GetCustomers()
         {
             return await _context.Customers.ToListAsync();
+        }
+
+        // GET: api/Customer
+        [HttpGet]
+        [Route("pagination")]
+        public async Task<ActionResult<IEnumerable<object>>> GetCustomers(int page, int size, string sort, string order)
+        {
+            var list = await _context.Customers.ToListAsync();
+            var totalCount = list.Count();
+
+            switch (sort)
+            {
+                case "id":
+                    list = order == "asc" ? list.OrderBy(i => i.Id).ToList() : list.OrderByDescending(i => i.Id).ToList();
+                    break;
+                case "name":
+                    list = order == "asc" ? list.OrderBy(i => i.Name).ToList() : list.OrderByDescending(i => i.Name).ToList();
+                    break;
+                case "mobile":
+                    list = order == "asc" ? list.OrderBy(i => i.Mobile).ToList() : list.OrderByDescending(i => i.Mobile).ToList();
+                    break;
+                case "email":
+                    list = order == "asc" ? list.OrderBy(i => i.Email).ToList() : list.OrderByDescending(i => i.Email).ToList();
+                    break;
+                default:
+                    list = order == "asc" ? list.OrderBy(i => i.Id).ToList() : list.OrderByDescending(i => i.Id).ToList();
+                    break;
+            }            
+            return new JsonResult(new {
+                items = list.Skip((page - 1) * size).Take(size).ToList(),
+                totalCount = totalCount
+            });
         }
 
         // GET: api/Customer/5
