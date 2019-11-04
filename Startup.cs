@@ -29,7 +29,7 @@ namespace mr_mat_api
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<MrMatContext>(opt => 
-                opt.UseInMemoryDatabase("MrMatDatabase"));
+                opt.UseSqlServer(@"Data Source=ZAKIS-MSD\MSSQLSERVER17; Initial Catalog=foo_db; User ID=sa; Password=password_123;"));
             services.AddCors();
             services.AddControllers();
         }
